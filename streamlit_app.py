@@ -38,6 +38,7 @@ if uploaded_file is not None:
         ax.set_xlabel("Temps")
         ax.set_ylabel("Température (C)")
         ax.set_title("Évolution de la Température")
+        plt.xticks(rotation=45, ha='right')  # Rotation des étiquettes de l'axe des x pour une meilleure lisibilité
         st.pyplot(fig)
 
         # Graphique de l'humidité
@@ -46,6 +47,7 @@ if uploaded_file is not None:
         ax.set_xlabel("Temps")
         ax.set_ylabel("Humidité (%)")
         ax.set_title("Évolution de l'Humidité")
+        plt.xticks(rotation=45, ha='right')  # Rotation des étiquettes de l'axe des x pour une meilleure lisibilité
         st.pyplot(fig)
 
         # Graphique de la luminosité
@@ -54,6 +56,7 @@ if uploaded_file is not None:
         ax.set_xlabel("Temps")
         ax.set_ylabel("Luminosité (Analogique)")
         ax.set_title("Évolution de la Luminosité")
+        plt.xticks(rotation=45, ha='right')  # Rotation des étiquettes de l'axe des x pour une meilleure lisibilité
         st.pyplot(fig)
 
 else:
