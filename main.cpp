@@ -2,9 +2,9 @@
 #include "3W.h"
 
 // Définition des macros
-#define BOUTON_ROUGE 2   // Port du bouton rouge
-#define BOUTON_VERT 3   // Port du bouton vert
-#define PHOTORESISTANCE A0   // Port de la photorésistance
+#define BOUTON_ROUGE 2 // Port du bouton rouge
+#define BOUTON_VERT 3 // Port du bouton vert
+#define PHOTORESISTANCE A0 // Port de la photorésistance
 
 // Utiliser pour basculer entre chaque mode
 #define CONFIGURATION 0   
@@ -56,13 +56,13 @@ String get_time() {
 void save_data_csv(Capteurs capteurs, String time) {
     File dataFile = SD.open("data.csv", FILE_WRITE);
     if (dataFile) {
-        dataFile.print(time);            // Sauvegarder le temps
+        dataFile.print(time); // Sauvegarder le temps
         dataFile.print(",");
-        dataFile.print(capteurs.temperatureAir);     // Sauvegarder la température
+        dataFile.print(capteurs.temperatureAir); // Sauvegarder la température
         dataFile.print(",");
-        dataFile.print(capteurs.hygrometrie);        // Sauvegarder l'humidité
+        dataFile.print(capteurs.hygrometrie); // Sauvegarder l'humidité
         dataFile.print(",");
-        dataFile.println(capteurs.lumiere);    // Sauvegarder la luminosité
+        dataFile.println(capteurs.lumiere); // Sauvegarder la luminosité
         dataFile.close();
     } else {
         Serial.println("Erreur d'ouverture du fichier");
