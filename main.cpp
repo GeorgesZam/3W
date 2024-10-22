@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "3W.h"
 
-/*-----Définition des macros-----*/
+// Définition des macros
 #define BOUTON_ROUGE 2   // Port du bouton rouge
 #define BOUTON_VERT 3   // Port du bouton vert
 #define PHOTORESISTANCE A0   // Port de la photorésistance
@@ -19,22 +19,23 @@ typedef struct {
     int lumiere;
 } Capteurs;
 
-/*----- Déclaration des variables globales -----*/
+// Déclaration des variables globales
 Capteurs capteurs;
-int currentMode = STANDARD;
-unsigned long buttonPressStart = 0;
+int modeCourant = STANDARD;
+volatile bool boutonAppuye = false;
+unsigned long debutAppuiBouton = 0;
 
-/*----- Prototypes des fonctions -----*/
-void modeConfiguration();
+// Prototypes des fonctions
+void modeConfig();
 void modeStandard();
-void modeEconomique();
-void modeMaintenance();
-void handleButtonPress();
-Capteurs get_data();
-String get_time();
-void save_data_csv(Capteurs capteurs, String time);
+void modeEco();
+void modeMaint();
+Capteurs lireCapteurs();
+String lireHeure();
+void sauvegarderCSV(Capteurs capteurs, String time);
+void IRAM_ATTR onButtonPress();
 
-/*----- Fonction pour obtenir les lectures des capteurs -----*/
+// Fonction pour obtenir les lectures des capteurs 
 Capteurs get_data() {
     Capteurs data;
     data.lumiere = analogRead(PHOTORESISTANCE); // Lecture de la photorésistance
@@ -43,7 +44,7 @@ Capteurs get_data() {
     return data;
 }
 
-/*----- Fonction pour obtenir l'heure actuelle -----*/
+// Fonction pour obtenir l'heure actuelle 
 String get_time() {
     DateTime now = rtc.now();  // Obtenir l'heure actuelle depuis le RTC
     String time = String(now.year()) + "-" + String(now.month()) + "-" + String(now.day()) + " " +
@@ -51,7 +52,7 @@ String get_time() {
     return time;
 }
 
-/*----- Fonction pour sauvegarder les données dans un fichier CSV -----*/
+// Fonction pour sauvegarder les données dans un fichier CSV 
 void save_data_csv(Capteurs capteurs, String time) {
     File dataFile = SD.open("data.csv", FILE_WRITE);
     if (dataFile) {
@@ -68,7 +69,7 @@ void save_data_csv(Capteurs capteurs, String time) {
     }
 }
 
-/*----- Fonctions pour les différents modes -----*/
+// Fonctions pour les différents modes
 void modeConfiguration() {
     Serial.println("Mode Configuration activé");
     // Logique pour le mode configuration
@@ -89,14 +90,30 @@ void modeMaintenance() {
     // Logique pour le mode maintenance
 }
 
-/*----- Gestion des boutons -----*/
-void handleButtonPress() {
-    if (digitalRead(BOUTON_ROUGE) == HIGH) {
-        buttonPressStart = millis();
-        while (digitalRead(BOUTON_ROUGE) == HIGH) {
-            // Attente jusqu'à ce que le bouton soit relâché
+// Fonction d'interruption pour gérer l'appui sur le bouton
+void IRAM_ATTR onButtonPress() {
+    boutonAppuye = true;
+}
+
+void setup() {
+    Serial.begin(9600);
+    pinMode(BOUTON_ROUGE, INPUT_PULLUP);
+    pinMode(BOUTON_VERT, INPUT);
+    attachInterrupt(digitalPinToInterrupt(BOUTON_ROUGE), onButtonPress, FALLING);
+    // Initialisation des capteurs et modules (e.g., RTC, SD card)
+    modeStandard();
+}
+
+void loop() {
+    if (buttonPressed) {
+        buttonPressed = false; // Reset the flag
+        unsigned long dureeAppui = millis();
+
+        while (digitalRead(BOUTON_ROUGE) == LOW) {
+            // Do nothing, just wait until button is released
         }
-        unsigned long pressDuration = millis() - buttonPressStart;
+
+        dureeAppui = millis() - pressDuration;
 
         if (pressDuration > 2000) { // Si le bouton est appuyé pendant plus de 2 secondes
             currentMode = (currentMode + 1) % 4; // Passer au mode suivant
@@ -116,21 +133,9 @@ void handleButtonPress() {
             }
         }
     }
-}
-
-void setup() {
-    Serial.begin(9600);
-    pinMode(BOUTON_ROUGE, INPUT);
-    pinMode(BOUTON_VERT, INPUT);
-    // Initialisation des capteurs et modules (e.g., RTC, SD card)
-    modeStandard();
-}
-
-void loop() {
-    handleButtonPress();
 
     // Lecture des capteurs
-    Capteurs capteurs = get_data();
+    capteurs = get_data();
     String time = get_time();
 
     // Sauvegarde des données
