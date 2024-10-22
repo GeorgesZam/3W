@@ -33,7 +33,7 @@ void modeMaint();
 Capteurs lireCapteurs();
 String lireHeure();
 void sauvegarderCSV(Capteurs capteurs, String time);
-void IRAM_ATTR onButtonPress();
+void  onButtonPress();
 
 // Fonction pour obtenir les lectures des capteurs 
 Capteurs get_data() {
@@ -91,7 +91,7 @@ void modeMaintenance() {
 }
 
 // Fonction d'interruption pour gérer l'appui sur le bouton
-void IRAM_ATTR onButtonPress() {
+void onButtonPress() {
     boutonAppuye = true;
 }
 
