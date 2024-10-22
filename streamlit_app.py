@@ -17,42 +17,44 @@ st.set_page_config(page_title="Visualisation des Données Arduino", layout="wide
 # Titre de l'application
 st.title("Visualisation des Données Collectées par Arduino")
 
-# Charger les données
-filepath = "data.csv"
-df = load_data(filepath)
+# Chargement du fichier CSV via drag and drop
+uploaded_file = st.file_uploader("Choisissez un fichier CSV", type="csv")
 
-# Si des données sont présentes, afficher les graphiques
-if not df.empty:
-    st.write("## Aperçu des Données Collectées")
-    st.dataframe(df)
+# Charger les données si un fichier est uploadé
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
 
-    # Création des graphiques
-    st.write("## Visualisation des Capteurs")
+    # Si des données sont présentes, afficher les graphiques
+    if not df.empty:
+        st.write("## Aperçu des Données Collectées")
+        st.dataframe(df)
 
-    # Graphique de la température
-    fig, ax = plt.subplots()
-    ax.plot(df['time'], df['temperature'], label='Température (C)', color='r')
-    ax.set_xlabel("Temps")
-    ax.set_ylabel("Température (C)")
-    ax.set_title("Évolution de la Température")
-    st.pyplot(fig)
+        # Création des graphiques
+        st.write("## Visualisation des Capteurs")
 
-    # Graphique de l'humidité
-    fig, ax = plt.subplots()
-    ax.plot(df['time'], df['humidity'], label='Humidité (%)', color='b')
-    ax.set_xlabel("Temps")
-    ax.set_ylabel("Humidité (%)")
-    ax.set_title("Évolution de l'Humidité")
-    st.pyplot(fig)
+        # Graphique de la température
+        fig, ax = plt.subplots()
+        ax.plot(df['time'], df['temperature'], label='Température (C)', color='r')
+        ax.set_xlabel("Temps")
+        ax.set_ylabel("Température (C)")
+        ax.set_title("Évolution de la Température")
+        st.pyplot(fig)
 
-    # Graphique de la luminosité
-    fig, ax = plt.subplots()
-    ax.plot(df['time'], df['luminosity'], label='Luminosité (Analogique)', color='g')
-    ax.set_xlabel("Temps")
-    ax.set_ylabel("Luminosité (Analogique)")
-    ax.set_title("Évolution de la Luminosité")
-    st.pyplot(fig)
+        # Graphique de l'humidité
+        fig, ax = plt.subplots()
+        ax.plot(df['time'], df['humidity'], label='Humidité (%)', color='b')
+        ax.set_xlabel("Temps")
+        ax.set_ylabel("Humidité (%)")
+        ax.set_title("Évolution de l'Humidité")
+        st.pyplot(fig)
+
+        # Graphique de la luminosité
+        fig, ax = plt.subplots()
+        ax.plot(df['time'], df['luminosity'], label='Luminosité (Analogique)', color='g')
+        ax.set_xlabel("Temps")
+        ax.set_ylabel("Luminosité (Analogique)")
+        ax.set_title("Évolution de la Luminosité")
+        st.pyplot(fig)
 
 else:
-    st.warning("Aucune donnée disponible. Assurez-vous que votre Arduino collecte et sauvegarde les données sur la carte SD.")
-
+    st.warning("Aucune donnée disponible. Assurez-vous de charger un fichier CSV pour visualiser les données.")
